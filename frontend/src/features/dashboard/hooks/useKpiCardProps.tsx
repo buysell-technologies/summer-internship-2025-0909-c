@@ -20,29 +20,26 @@ const useKpiCardProps = ({
   const [kpiCardProps, setKpiCardProps] = useState<KpiCardProps[]>([]);
   useEffect(() => {
     const kpi = generateKpiData(orders, customers, stocks);
-    const stocksCsvData = convertCSVFromArray(stocks);
-    const customersCsvData = convertCSVFromArray(customers);
-    const ordersCsvData = convertCSVFromArray(orders);
     setKpiCardProps([
       {
         title: kpi.orders.title,
         value: kpi.orders.value,
         trend: kpi.orders.trend,
-        csvData: ordersCsvData,
+        getCsvData: () => convertCSVFromArray(orders),
         csvFilename: 'orders.csv',
       },
       {
         title: kpi.stocks.title,
         value: kpi.stocks.value,
         trend: kpi.stocks.trend,
-        csvData: stocksCsvData,
+        getCsvData: () => convertCSVFromArray(stocks),
         csvFilename: 'stocks.csv',
       },
       {
         title: kpi.customers.title,
         value: kpi.customers.value,
         trend: kpi.customers.trend,
-        csvData: customersCsvData,
+        getCsvData: () => convertCSVFromArray(customers),
         csvFilename: 'customers.csv',
       },
     ]);

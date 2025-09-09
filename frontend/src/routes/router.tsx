@@ -3,13 +3,8 @@ import {
   createRoute,
   createRootRoute,
 } from '@tanstack/react-router';
-import { Outlet } from '@tanstack/react-router';
+import { Outlet, lazyRouteComponent } from '@tanstack/react-router';
 import AppLayout from '../components/layout/AppLayout';
-import DashboardPage from '../pages/dashboard/DashboardPage';
-import StocksPage from '../pages/stock/StocksPage';
-import OrdersPage from '../pages/sales/OrdersPage';
-import CustomersPage from '../pages/customer/CustomersPage';
-import ProfilePage from '../pages/profile/ProfilePage';
 
 // ルートレイアウト
 const rootRoute = createRootRoute({
@@ -24,7 +19,9 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: DashboardPage,
+  component: lazyRouteComponent(
+    () => import('../pages/dashboard/DashboardPage'),
+  ),
 });
 
 // ログインページ
@@ -45,14 +42,16 @@ const usersRoute = createRoute({
 const stocksRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/stocks',
-  component: StocksPage,
+  component: lazyRouteComponent(() => import('../pages/stock/StocksPage')),
 });
 
 // 顧客管理
 const customersRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/customers',
-  component: CustomersPage,
+  component: lazyRouteComponent(
+    () => import('../pages/customer/CustomersPage'),
+  ),
 });
 
 // 注文管理
@@ -66,14 +65,14 @@ const ordersRoute = createRoute({
 const salesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/sales',
-  component: OrdersPage,
+  component: lazyRouteComponent(() => import('../pages/sales/OrdersPage')),
 });
 
 // プロファイル
 const profileRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/profile',
-  component: ProfilePage,
+  component: lazyRouteComponent(() => import('../pages/profile/ProfilePage')),
 });
 
 // ルートツリーの作成

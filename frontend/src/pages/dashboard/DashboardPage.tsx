@@ -1,11 +1,16 @@
 import { Box, Grid, Typography } from '@mui/material';
 import KpiCard from '../../features/dashboard/components/KpiCard';
-import SalesChart from '../../features/dashboard/components/SalesChart';
-import ActivityFeed from '../../features/dashboard/components/ActivityFeed';
 import { mockDataForDashboard as orders } from '../../mocks/orders';
 import { mockDataForDashboard as customers } from '../../mocks/customers';
 import { mockDataForDashboard as stocks } from '../../mocks/stocks';
 import useKpiCardProps from '../../features/dashboard/hooks/useKpiCardProps';
+import { lazy, Suspense } from 'react';
+const SalesChart = lazy(
+  () => import('../../features/dashboard/components/SalesChart'),
+);
+const ActivityFeed = lazy(
+  () => import('../../features/dashboard/components/ActivityFeed'),
+);
 
 const DashboardPage = () => {
   const kpiCardProps = useKpiCardProps({ orders, customers, stocks });
@@ -55,13 +60,19 @@ const DashboardPage = () => {
               size={{ xs: 12, sm: 6, md: 4, lg: 20 / 5, xl: 20 / 5 }}
               key={index}
             >
-              <KpiCard
-                title={kpiCardProps.title}
-                value={kpiCardProps.value}
-                trend={kpiCardProps.trend}
-                csvData={kpiCardProps.csvData}
-                csvFilename={kpiCardProps.csvFilename}
-              />
+              <Suspense
+                fallback={
+                  <Box sx={{ height: 300, backgroundColor: '#f0f0f0' }} />
+                }
+              >
+                <KpiCard
+                  title={kpiCardProps.title}
+                  value={kpiCardProps.value}
+                  trend={kpiCardProps.trend}
+                  getCsvData={kpiCardProps.getCsvData}
+                  csvFilename={kpiCardProps.csvFilename}
+                />
+              </Suspense>
             </Grid>
           ))}
         </Grid>
@@ -69,10 +80,22 @@ const DashboardPage = () => {
         {/* Charts and Activity */}
         <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ width: '100%' }}>
           <Grid size={{ xs: 12, lg: 8 }}>
-            <SalesChart />
+            <Suspense
+              fallback={
+                <Box sx={{ height: 300, backgroundColor: '#f0f0f0' }} />
+              }
+            >
+              <SalesChart />
+            </Suspense>
           </Grid>
           <Grid size={{ xs: 12, lg: 4 }}>
-            <ActivityFeed />
+            <Suspense
+              fallback={
+                <Box sx={{ height: 300, backgroundColor: '#f0f0f0' }} />
+              }
+            >
+              <ActivityFeed />
+            </Suspense>
           </Grid>
         </Grid>
       </Box>
