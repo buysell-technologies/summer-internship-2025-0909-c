@@ -21,18 +21,6 @@ func (r *repository) GetUsers(ctx context.Context, tenantID string, limit, offse
 		return nil, err
 	}
 
-
-	// ループしながら、2人目以降のユーザーに対する在庫データを取得してるからN+1問題が発生する
-	// ユーザーの数分だけクエリを発行するのが問題
-	// Stocksをpreloadしておけばいいのでは？Rails的な書き方
-	/*
-	for i, user := range users {
-		stocks := []*model.Stock{}
-		if err := r.db.Where("user_id = ?", user.ID).Find(&stocks).Error; err == nil {
-			users[i].Stocks = stocks
-		}
-	}
-	*/
 	return users, nil
 }
 
