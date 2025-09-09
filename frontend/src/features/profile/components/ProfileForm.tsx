@@ -36,9 +36,9 @@ const ProfileForm = ({ user, refetch }: ProfileFormProps) => {
     // MEMO: useGetUsersIdで取得した従業員データの値を取得後にフォームに設定
     values: user
       ? {
-        name: user.name || '',
-        email: user.email || '',
-      }
+          name: user.name || '',
+          email: user.email || '',
+        }
       : undefined,
   });
 

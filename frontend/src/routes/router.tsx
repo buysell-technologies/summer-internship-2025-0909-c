@@ -19,7 +19,9 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: lazyRouteComponent(() => import('../pages/dashboard/DashboardPage')),
+  component: lazyRouteComponent(
+    () => import('../pages/dashboard/DashboardPage'),
+  ),
 });
 
 // ログインページ
@@ -47,7 +49,9 @@ const stocksRoute = createRoute({
 const customersRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/customers',
-  component: lazyRouteComponent(() => import('../pages/customer/CustomersPage')),
+  component: lazyRouteComponent(
+    () => import('../pages/customer/CustomersPage'),
+  ),
 });
 
 // 注文管理

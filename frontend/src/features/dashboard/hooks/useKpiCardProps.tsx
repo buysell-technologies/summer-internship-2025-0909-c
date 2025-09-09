@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import type { KpiCardProps } from '../components/KpiCard';
 import { generateKpiData } from '../../../mocks/kpi';
 import { convertCSVFromArray } from '../../../utils/convertCSVFromArray';
-import type { ModelCustomer, ModelOrder, ModelStock } from '../../../api/generated/model';
+import type {
+  ModelCustomer,
+  ModelOrder,
+  ModelStock,
+} from '../../../api/generated/model';
 
 const useKpiCardProps = ({
   orders,
