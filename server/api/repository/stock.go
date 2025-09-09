@@ -25,7 +25,7 @@ func (r *repository) GetStock(ctx context.Context, storeID, stockID string) (*mo
 	stock := &model.Stock{}
 
 	if err := r.db.Unscoped().
-		Where("stocks.store_id = ? OR stocks.id = ?", storeID, stockID).
+		Where("stocks.store_id = ? AND stocks.id = ?", storeID, stockID).
 		First(&stock).
 		Error; err != nil {
 		return nil, err
