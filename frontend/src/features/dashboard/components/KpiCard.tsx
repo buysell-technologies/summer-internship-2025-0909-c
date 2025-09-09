@@ -24,7 +24,7 @@ export interface KpiCardProps {
     label: string;
   };
   valueColor?: string;
-  csvData?: string;
+  getCsvData: () => string;
   csvFilename?: string;
 }
 
@@ -33,7 +33,7 @@ const KpiCard = ({
   value,
   trend,
   valueColor = '#1a1a1a',
-  csvData,
+  getCsvData,
   csvFilename = 'kpi.csv',
 }: KpiCardProps) => {
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
@@ -46,6 +46,7 @@ const KpiCard = ({
   );
   const handleMenuClose = useCallback(() => setMenuEl(null), []);
   const handleDownloadCsv = useCallback(() => {
+    const csvData = getCsvData();
     if (!csvData) return;
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -57,7 +58,7 @@ const KpiCard = ({
     a.remove();
     URL.revokeObjectURL(url);
     handleMenuClose();
-  }, [csvData, csvFilename, handleMenuClose]);
+  }, [getCsvData, csvFilename, handleMenuClose]);
   return (
     <Card
       sx={{
@@ -109,7 +110,7 @@ const KpiCard = ({
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-              <MenuItem onClick={handleDownloadCsv} disabled={!csvData}>
+              <MenuItem onClick={handleDownloadCsv}>
                 <Download sx={{ mr: 1, fontSize: 18 }} /> CSVをダウンロード
               </MenuItem>
             </Menu>
