@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/buysell-technologies/summer-internship-2024-backend/api/domain/model"
 )
@@ -58,10 +57,8 @@ func (r *repository) CreateBulkStock(ctx context.Context, stocks []model.Stock) 
 }
 
 func (r *repository) UpdateStock(ctx context.Context, stock model.Stock) (*model.Stock, error) {
-	updateQuery := fmt.Sprintf("name = '%s', quantity = %d, price = %d", stock.Name, stock.Quantity, stock.Price)
-
 	if err := r.db.
-		Exec("UPDATE stocks SET "+updateQuery+" WHERE id = ?", stock.ID).
+		Exec("UPDATE stocks SET name = ?, quantity = ?, price = ? WHERE id = ?", stock.Name, stock.Quantity, stock.Price, stock.ID).
 		Error; err != nil {
 		return nil, err
 	}
