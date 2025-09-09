@@ -1,4 +1,5 @@
-import { TableRow, TableCell } from '@mui/material';
+import { TableRow, TableCell, IconButton, Tooltip, Box } from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 import type { ModelStock } from '../../../api/generated/model';
 import { useI18n } from '../../../providers/I18nProvider';
 
@@ -13,12 +14,16 @@ interface StockTableRowProps {
     updated: string;
   };
   isMobile: boolean;
+  onEdit?: (stock: ModelStock) => void;
+  onDelete?: (stock: ModelStock) => void;
 }
 
 const StockTableRow = ({
   stock,
   columnWidths,
   isMobile,
+  onEdit,
+  onDelete,
 }: StockTableRowProps) => {
   const { formatDate } = useI18n();
 
@@ -119,6 +124,37 @@ const StockTableRow = ({
         }}
       >
         {formatDate(stock.updated_at) || '-'}
+      </TableCell>
+      <TableCell
+        sx={{
+          py: 1.5,
+          width: '120px',
+        }}
+      >
+        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+          {onEdit && (
+            <Tooltip title="編集">
+              <IconButton
+                size="small"
+                onClick={() => onEdit(stock)}
+                sx={{ color: '#1976d2' }}
+              >
+                <Edit fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+          {onDelete && (
+            <Tooltip title="削除">
+              <IconButton
+                size="small"
+                onClick={() => onDelete(stock)}
+                sx={{ color: '#d32f2f' }}
+              >
+                <Delete fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
       </TableCell>
     </TableRow>
   );

@@ -21,6 +21,8 @@ interface StockTableProps {
   rowsPerPage: number;
   onPageChange: (event: unknown, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onEdit?: (stock: ModelStock) => void;
+  onDelete?: (stock: ModelStock) => void;
 }
 
 const StockTable = ({
@@ -29,6 +31,8 @@ const StockTable = ({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
+  onEdit,
+  onDelete,
 }: StockTableProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -49,29 +53,32 @@ const StockTable = ({
     if (isMobile) {
       return {
         id: '10%',
-        name: '35%',
-        price: '20%',
-        quantity: '15%',
-        created: '0%', // モバイルでは非表示
-        updated: '20%',
-      };
-    } else if (isTablet) {
-      return {
-        id: '8%',
         name: '30%',
         price: '18%',
         quantity: '12%',
-        created: '16%',
-        updated: '16%',
+        created: '0%', // モバイルでは非表示
+        updated: '20%',
+        actions: '10%',
       };
-    } else {
+    } else if (isTablet) {
       return {
-        id: '8%',
+        id: '7%',
         name: '25%',
         price: '15%',
         quantity: '10%',
-        created: '21%',
-        updated: '21%',
+        created: '13%',
+        updated: '13%',
+        actions: '7%',
+      };
+    } else {
+      return {
+        id: '6%',
+        name: '20%',
+        price: '12%',
+        quantity: '8%',
+        created: '18%',
+        updated: '18%',
+        actions: '8%',
       };
     }
   };
@@ -161,6 +168,18 @@ const StockTable = ({
             >
               更新日時
             </TableCell>
+            <TableCell
+              align="center"
+              sx={{
+                width: columnWidths.actions,
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                py: 2,
+                color: '#555',
+              }}
+            >
+              操作
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -170,6 +189,8 @@ const StockTable = ({
               stock={stock}
               columnWidths={columnWidths}
               isMobile={isMobile}
+              onEdit={onEdit}
+              onDelete={onDelete}
             />
           ))}
         </TableBody>
