@@ -31,13 +31,20 @@ const CustomersPage = () => {
   const [page, setPage] = useState(0);
 
   const [rowsPerPage, setRowsPerPage] = useState<number>(() => {
-    const stored = localStorage.getItem(CUSTOMER_PAGE_SETTINGS_STORAGE_KEY)!;
-    const parsed = JSON.parse(stored) as CustomerPageSettings;
-    if (
-      typeof parsed.rowsPerPage === 'number' &&
-      VALID_PAGE_SIZES.includes(parsed.rowsPerPage as ValidPageSize)
-    ) {
-      return parsed.rowsPerPage;
+    const stored = localStorage.getItem(CUSTOMER_PAGE_SETTINGS_STORAGE_KEY);
+    if (!stored) {
+      return DEFAULT_SETTINGS.rowsPerPage;
+    }
+    try {
+      const parsed = JSON.parse(stored) as CustomerPageSettings;
+      if (
+        typeof parsed.rowsPerPage === 'number' &&
+        VALID_PAGE_SIZES.includes(parsed.rowsPerPage as ValidPageSize)
+      ) {
+        return parsed.rowsPerPage;
+      }
+    } catch (error) {
+      console.error('Failed to parse customer page settings:', error);
     }
     return DEFAULT_SETTINGS.rowsPerPage;
   });
