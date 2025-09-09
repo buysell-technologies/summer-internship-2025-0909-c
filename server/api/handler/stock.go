@@ -255,24 +255,37 @@ func formatPriceWithComma(price int) string {
 	if price < 1000 {
 		return strconv.Itoa(price)
 	}
-	
+
 	priceStr := strconv.Itoa(price)
 	n := len(priceStr)
 	result := make([]byte, 0, n+n/3)
-	
+
 	for i, char := range []byte(priceStr) {
 		if i > 0 && (n-i)%3 == 0 {
 			result = append(result, ',')
 		}
 		result = append(result, char)
 	}
-	
+
 	return string(result)
 }
 
-// formatDateTime formats timestamp to YYYY/MM/DD HH:MM format
+// sanitizeCSVField removes potentially dangerous characters from CSV fields
+func sanitizeCSVField(field string) string {
+	// 危険な文字やSQLインジェクション的なパターンを除去
+	// CSVインジェクション対策として、=, +, -, @で始まる値にプレフィックスを追加
+	if len(field) > 0 {
+		firstChar := field[0]
+		if firstChar == '=' || firstChar == '+' || firstChar == '-' || firstChar == '@' {
+			return "'" + field
+		}
+	}
+	return field
+}
+
+// formatDateTime formats timestamp to YYYY/MM/DD HH:MM:SS format
 func formatDateTime(t time.Time) string {
-	return t.Format("2006/01/02 15:04")
+	return t.Format("2006/01/02 15:04:05")
 }
 
 // DownloadStocksCSV godoc
@@ -317,7 +330,7 @@ func (h *Handler) DownloadStocksCSV(c echo.Context) error {
 	for _, stock := range stocks {
 		record := []string{
 			strconv.Itoa(stock.ID),
-			stock.Name,
+			sanitizeCSVField(stock.Name),
 			formatPriceWithComma(stock.Price),
 			strconv.Itoa(stock.Quantity),
 			formatDateTime(stock.CreatedAt),
@@ -342,6 +355,6 @@ func (h *Handler) DownloadStocksCSV(c echo.Context) error {
 	// レスポンスヘッダーを設定
 	c.Response().Header().Set("Content-Type", "text/csv; charset=utf-8")
 	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
-
-	return c.String(http.StatusOK, buf.String())
+	fmt.Printf("Generated CSV filename: %s\n", filename)
+	return c.Blob(http.StatusOK, "text/csv; charset=utf-8", buf.Bytes())
 }
