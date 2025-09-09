@@ -17,6 +17,7 @@ import {
   Button,
   Snackbar,
 } from '@mui/material';
+import { Download } from '@mui/icons-material';
 import type { ModelStock } from '../../api/generated/model';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -31,6 +32,7 @@ const StocksPage = () => {
     message: string;
     severity: 'success' | 'error';
   }>({ open: false, message: '', severity: 'success' });
+  const [csvDownloadLoading, setCsvDownloadLoading] = useState(false);
 
   const { userId, storeId } = useAuth();
 
@@ -133,6 +135,69 @@ const StocksPage = () => {
     setSelectedStock(null);
   };
 
+  const handleDownloadCSV = async () => {
+    setCsvDownloadLoading(true);
+    try {
+      // ky クライアントを使用してCSVダウンロード（既存の認証メカニズムを利用）
+      const baseUrl =
+        import.meta.env.VITE_API_URL || 'http://localhost:1234/v1';
+
+      const response = await fetch(`${baseUrl}/stocks/csv`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_API_AUTH_TOKEN}`,
+          Accept: 'text/csv',
+          'Content-Type': 'application/json', // 他のAPIと同じヘッダーを追加
+        },
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(
+          `HTTPエラー ${response.status}: ${errorText || 'CSVダウンロードに失敗しました'}`,
+        );
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+
+      // Content-Dispositionヘッダーからファイル名を取得
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'stocks.csv';
+      if (contentDisposition) {
+        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(
+          contentDisposition,
+        );
+        if (matches && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      showSnackbar('CSVファイルをダウンロードしました', 'success');
+    } catch (error) {
+      console.error('CSV download error:', error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'CSVファイルのダウンロードに失敗しました';
+      showSnackbar(errorMessage, 'error');
+    } finally {
+      setCsvDownloadLoading(false);
+    }
+  };
+
   const isFormLoading =
     createStockMutation.isPending || updateStockMutation.isPending;
   const isDeleteLoading = deleteStockMutation.isPending;
@@ -191,13 +256,36 @@ const StocksPage = () => {
         >
           在庫管理
         </Typography>
-        <Button
-          variant="contained"
-          onClick={handleNewStock}
-          sx={{ minWidth: '120px' }}
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            flexDirection: { xs: 'column', sm: 'row' },
+          }}
         >
-          新規登録
-        </Button>
+          <Button
+            variant="outlined"
+            startIcon={<Download />}
+            onClick={handleDownloadCSV}
+            disabled={csvDownloadLoading}
+            sx={{
+              minWidth: '120px',
+              order: { xs: 2, sm: 1 },
+            }}
+          >
+            {csvDownloadLoading ? 'CSV出力中...' : 'CSV出力'}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleNewStock}
+            sx={{
+              minWidth: '120px',
+              order: { xs: 1, sm: 2 },
+            }}
+          >
+            新規登録
+          </Button>
+        </Box>
       </Box>
       <Box
         sx={{

@@ -185,9 +185,11 @@ definitions:
         type: string
       price:
         example: 100000
+        minimum: 0
         type: integer
       quantity:
         example: 1
+        minimum: 0
         type: integer
       store_id:
         example: 00000000-0000-0000-0000-000000000000
@@ -856,6 +858,25 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 在庫の一括作成
+  /stocks/csv:
+    get:
+      description: 在庫一覧をCSV形式でダウンロード
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: CSV data
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: 在庫一覧のCSVダウンロード
   /users:
     get:
       description: 従業員一覧の取得

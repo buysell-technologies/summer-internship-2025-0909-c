@@ -40,6 +40,7 @@ func (h *Handler) AssignRoutes(e *echo.Echo) {
 		sg := g.Group("/stocks")
 		{
 			sg.GET("", h.GetStocks)
+			sg.GET("/csv", h.DownloadStocksCSV)
 			sg.GET("/:id", h.GetStock)
 			sg.POST("", h.CreateStock)
 			sg.POST("/bulk", h.CreateBulkStock)

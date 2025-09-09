@@ -623,6 +623,36 @@ const docTemplate = `{
                 }
             }
         },
+        "/stocks/csv": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "在庫一覧をCSV形式でダウンロード",
+                "produces": [
+                    "text/csv"
+                ],
+                "summary": "在庫一覧のCSVダウンロード",
+                "responses": {
+                    "200": {
+                        "description": "CSV data",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/stocks/{id}": {
             "get": {
                 "security": [
@@ -1217,10 +1247,12 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 100000
                 },
                 "quantity": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 1
                 },
                 "store_id": {
